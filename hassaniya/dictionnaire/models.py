@@ -7,11 +7,14 @@ class Utilisateur(models.Model):
         ('Modérateur', 'Modérateur'),
         ('Contributeur', 'Contributeur'),
     ]
+
+    email = models.EmailField(unique=True, verbose_name='Adresse email')
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='Contributeur')
     score = models.IntegerField(default=0)
+    mot_de_passe = models.CharField(max_length=128, verbose_name='Mot de passe')  # Champ pour stocker le mot de passe hashé
 
     def __str__(self):
-        return self.username
+        return self.email
 
 # Model for Mot (Word)
 class Mot(models.Model):
