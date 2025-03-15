@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'nlp',
+    'dictionnaire',
 ]
 
 MIDDLEWARE = [
@@ -75,8 +77,15 @@ WSGI_APPLICATION = 'hassaniya.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',  # Utilisation du moteur MySQL
+        'NAME': 'hassaniya',                  # Nom de la base de données
+        'USER': 'root',                       # Nom d'utilisateur MySQL
+        'PASSWORD': '',                       # Pas de mot de passe
+        'HOST': 'localhost',                  # Hôte de la base de données (localhost par défaut)
+        'PORT': '3306',                       # Port MySQL (3306 par défaut)
+        'OPTIONS': {
+            'charset': 'utf8mb4',             # Encodage des caractères
+        },
     }
 }
 
