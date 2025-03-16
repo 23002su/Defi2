@@ -1,0 +1,154 @@
+{% extends '../base.html' %}
+{% load static %}
+
+{% block css %}
+<style>
+    .add{
+        background-color: #3498db;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+</style> 
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Pending Contributions</h2>
+    
+    <!-- Suggest Word Button -->
+    <button class="add btn mb-3" data-bs-toggle="modal" data-bs-target="#suggestWordModal">
+        Suggest a Word
+    </button>
+
+    <div class="row">
+        {% for contribution in contributions %}
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ contribution.mot }}</h5>
+                    <p class="card-text">
+                        <strong>Contributeur:</strong> {{ contribution.id_contribiteur.email }}<br>
+                        <strong>Statut:</strong> {{ contribution.statut }}<br>
+                        <strong>Transliteration:</strong> {{ contribution.transliteration|default:"N/A" }}<br>
+                        <strong>Définition:</strong> {{ contribution.definition|default:"N/A" }}
+                    </p>
+                    <!-- Buttons for Validate/Reject and Add Comment -->
+                    <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#validateModal{{ contribution.id }}">
+                        Valider
+                    </button>
+                    <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#rejectModal{{ contribution.id }}">
+                        Rejeter
+                    </button>
+                    <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#commentModal{{ contribution.id }}">
+                        Commenter
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Validate Modal -->
+        <div class="modal fade" id="validateModal{{ contribution.id }}" tabindex="-1" aria-labelledby="validateModalLabel{{ contribution.id }}" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="validateModalLabel{{ contribution.id }}">Valider la Contribution</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Are you sure you want to validate "{{ contribution.mot }}"?
+                    </div>
+                    <div class="modal-footer">
+                        <form method="post" action="{% url 'validate_contribution' contribution.id %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="validate">
+                            <button type="submit" class="btn btn-success">Valider</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reject Modal -->
+        <div class="modal fade" id="rejectModal{{ contribution.id }}" tabindex="-1" aria-labelledby="rejectModalLabel{{ contribution.id }}" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="rejectModalLabel{{ contribution.id }}">Rejeter la contribution</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Êtes-vous sûr(e) de vouloir rejeter ? "{{ contribution.mot }}"?
+                    </div>
+                    <div class="modal-footer">
+                        <form method="post" action="{% url 'validate_contribution' contribution.id %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="reject">
+                            <button type="submit" class="btn btn-danger">Rejeter</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comment Modal -->
+        <div class="modal fade" id="commentModal{{ contribution.id }}" tabindex="-1" aria-labelledby="commentModalLabel{{ contribution.id }}" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="commentModalLabel{{ contribution.id }}">Ajouter un commentaire</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="post" action="{% url 'add_comment' contribution.id %}">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="commentaire{{ contribution.id }}" class="form-label">Commentaire</label>
+                                <textarea class="form-control" id="commentaire{{ contribution.id }}" name="commentaire" rows="4" required></textarea>
+                            </div>
+                            <button type="submit" class="add btn">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>            
+
+<!-- Suggest Word Modal -->
+<div class="modal fade" id="suggestWordModal" tabindex="-1" aria-labelledby="suggestWordModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="suggestWordModalLabel">Proposer un mot</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" action="{% url 'suggest_word' %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="mot" class="form-label">Mot</label>
+                        <input type="text" class="form-control" id="mot" name="mot" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="transliteration" class="form-label">Transliteration</label>
+                        <input type="text" class="form-control" id="transliteration" name="transliteration">
+                    </div>
+                    <div class="mb-3">
+                        <label for="definition" class="form-label">Définition</label>
+                        <textarea class="form-control" id="definition" name="definition" rows="3"></textarea>
+                    </div>
+                    <button type="submit" class="add btn">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

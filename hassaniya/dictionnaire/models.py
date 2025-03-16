@@ -7,11 +7,14 @@ class Utilisateur(models.Model):
         ('Modérateur', 'Modérateur'),
         ('Contributeur', 'Contributeur'),
     ]
+
+    email = models.EmailField(unique=True, verbose_name='Adresse email')
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='Contributeur')
     score = models.IntegerField(default=0)
+    mot_de_passe = models.CharField(max_length=128, verbose_name='Mot de passe')  # Champ pour stocker le mot de passe hashé
 
     def __str__(self):
-        return self.username
+        return self.email
 
 # Model for Mot (Word)
 class Mot(models.Model):
@@ -31,6 +34,8 @@ class Contribution(models.Model):
     id_contribiteur = models.ForeignKey(Utilisateur, on_delete=models.CASCADE, related_name='contributions_contributor')
     id_moderateur = models.ForeignKey(Utilisateur, on_delete=models.SET_NULL, null=True, blank=True, related_name='contributions_moderator')
     mot = models.CharField(max_length=255)
+    transliteration = models.CharField(max_length=255, blank=True, null=True)
+    definition = models.TextField()
     statut = models.CharField(max_length=20, choices=STATUT_CHOICES, default='en attente')
 
     def __str__(self):

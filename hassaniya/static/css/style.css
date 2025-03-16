@@ -1,0 +1,14 @@
+body{
+    padding:0;
+    margin:0;
+}
+nav{
+    background-color: #69d3e8;
+    width: 100%;
+}
+.footer{
+    background-color: #69d3e8;
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+}
