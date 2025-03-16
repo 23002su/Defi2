@@ -3,7 +3,7 @@ from .views import register, user_login, user_logout, profile, users_list, updat
 
 urlpatterns = [
     path('register/', register, name='register'),
-    path('login/', user_login, name='login'),
+    path('', user_login, name='login'),
     path('logout/', user_logout, name='logout'),
     path('profile/', profile, name='profile'),
     path('users/', users_list, name='users_list'),
