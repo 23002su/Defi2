@@ -45,6 +45,7 @@ class Contribution(models.Model):
 class Commentaire(models.Model):
     id_moderateur = models.ForeignKey(Utilisateur, on_delete=models.CASCADE, related_name='commentaires_moderator')
     id_contributeur = models.ForeignKey(Utilisateur, on_delete=models.CASCADE, related_name='commentaires_contributor')
+    contribution = models.ForeignKey(Contribution, on_delete=models.CASCADE, related_name='commentaires', null=True, blank=True)  # New field
     commentaire = models.TextField()
     date = models.DateField(auto_now_add=True)
     is_seen = models.BooleanField(default=False)

@@ -3,12 +3,13 @@
 <style>
 
     .logout {
-        padding: 8px;
-        width:auto;
+        padding: 8px 17px;
+        width: 100%;
         background-color: #69d3e8;
         text-decoration: none;
-        border-radius: 25px;
-        color:#000;
+        border-radius: 15px;
+        color: #000;
+        margin-top: 10px;
     }
 
 </style>
@@ -17,8 +18,10 @@
 {% endblock %}
 
 {% block content %}
-    <h2>Welcome, {{ user.email }}!</h2>
-    <p>Your role: {{ user.role }}</p>
-    <p>Your score: {{ user.score }}</p>
-    <a class="logout" href="{% url 'logout' %}">Logout</a>
+    <div class="container mt-4">
+        <h2>Bienvenu, {{ user.email }}!</h2>
+        <p>Votre role: {{ user.role }}</p>
+        <p>Votre score: {{ user.score }}</p>
+        <a class="logout" href="{% url 'logout' %}">Deconnecter</a>
+    </div>
 {% endblock %}

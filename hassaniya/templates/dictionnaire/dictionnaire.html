@@ -1,0 +1,201 @@
+{% extends '../base.html' %}  <!-- Assuming you have a base template -->
+{% block css %}
+<style>
+    body {
+        padding-bottom: 50px;
+    }
+    .add{
+        background-color: #3498db;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    .page-item .page-link{
+        color:#3498db;
+    }
+    .page-item.active{
+        z-index: -1;
+    }
+    .page-item.active .page-link{
+        background-color: #3498db;
+        color: #fff;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<div class="container">
+    <h1 class="my-4">Dictionnaire Hassaniya</h1>
+
+    <!-- Add Word Button (Visible to Admin and Modérateur) -->
+    {% if user.role == 'Admin' or user.role == 'Modérateur' %}
+    <div class="mb-4">
+        <button type="button" class="add btn" data-bs-toggle="modal" data-bs-target="#addWordModal">
+            Ajouter un mot
+        </button>
+    </div>
+    {% endif %}
+
+    <!-- Display Words in Cards -->
+    <div class="row">
+        {% for mot in mots %}
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ mot.mot_hassaniya }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">{{ mot.transliteration }}</h6>
+                    <p class="card-text">{{ mot.definition }}</p>
+
+                    <!-- Display Variants -->
+                    {% if mot.variantes.all %}
+                    <h6>Variantes:</h6>
+                    <ul class="list-group list-group-flush">
+                        {% for variant in mot.variantes.all %}
+                        <li class="list-group-item">
+                            <strong>{{ variant.forme }}</strong> ({{ variant.type }})
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+
+                    <!-- Action Buttons (Visible to Admin and Modérateur) -->
+                    {% if user.role == 'Admin' or user.role == 'Modérateur' %}
+                    <div class="mt-3">
+                        <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#updateWordModal{{ mot.id }}">
+                            Modifier
+                        </button>
+                        <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteWordModal{{ mot.id }}">
+                            Supprimer
+                        </button>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Update Word Modal -->
+        <div class="modal fade" id="updateWordModal{{ mot.id }}" tabindex="-1" aria-labelledby="updateWordModalLabel{{ mot.id }}" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="updateWordModalLabel{{ mot.id }}">Modifier le mot</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="POST" action="{% url 'update_word' mot.id %}">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="mot_hassaniya{{ mot.id }}" class="form-label">Mot Hassaniya</label>
+                                <input type="text" class="form-control" id="mot_hassaniya{{ mot.id }}" name="mot_hassaniya" value="{{ mot.mot_hassaniya }}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="transliteration{{ mot.id }}" class="form-label">Transcription</label>
+                                <input type="text" class="form-control" id="transliteration{{ mot.id }}" name="transliteration" value="{{ mot.transliteration }}">
+                            </div>
+                            <div class="mb-3">
+                                <label for="definition{{ mot.id }}" class="form-label">Définition</label>
+                                <textarea class="form-control" id="definition{{ mot.id }}" name="definition" rows="3" required>{{ mot.definition }}</textarea>
+                            </div>
+                            <button type="submit" class="add btn">Enregistrer</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete Word Modal -->
+        <div class="modal fade" id="deleteWordModal{{ mot.id }}" tabindex="-1" aria-labelledby="deleteWordModalLabel{{ mot.id }}" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteWordModalLabel{{ mot.id }}">Supprimer le mot</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Êtes-vous sûr de vouloir supprimer le mot <strong>{{ mot.mot_hassaniya }}</strong> ?</p>
+                        <form method="POST" action="{% url 'delete_word' mot.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">Supprimer</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if mots.has_other_pages %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if mots.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ mots.previous_page_number }}">&laquo;</a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">&laquo;</span>
+            </li>
+            {% endif %}
+
+            {% for num in mots.paginator.page_range %}
+            {% if mots.number == num %}
+            <li class="page-item active">
+                <span class="page-link">{{ num }}</span>
+            </li>
+            {% else %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+            </li>
+            {% endif %}
+            {% endfor %}
+
+            {% if mots.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ mots.next_page_number }}">&raquo;</a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">&raquo;</span>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+
+<!-- Add Word Modal -->
+<div class="modal fade" id="addWordModal" tabindex="-1" aria-labelledby="addWordModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addWordModalLabel">Ajouter un mot</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{% url 'add_word' %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="mot_hassaniya" class="form-label">Mot Hassaniya</label>
+                        <input type="text" class="form-control" id="mot_hassaniya" name="mot_hassaniya" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="transliteration" class="form-label">Transcription</label>
+                        <input type="text" class="form-control" id="transliteration" name="transliteration">
+                    </div>
+                    <div class="mb-3">
+                        <label for="definition" class="form-label">Définition</label>
+                        <textarea class="form-control" id="definition" name="definition" rows="3" required></textarea>
+                    </div>
+                    <button type="submit" class="add btn">Ajouter</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,5 +1,5 @@
 from django import forms
-from .models import Utilisateur, Commentaire, Contribution
+from .models import Utilisateur, Commentaire, Contribution, Mot
 
 
 class UtilisateurForm(forms.ModelForm):
@@ -48,4 +48,22 @@ class ContributionForm(forms.ModelForm):
             'mot': forms.TextInput(attrs={'class': 'form-control'}),
             'transliteration': forms.TextInput(attrs={'class': 'form-control'}),
             'definition': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
-        }       
+        }  
+        
+        
+        
+        
+class MotForm(forms.ModelForm):
+    class Meta:
+        model = Mot
+        fields = ['mot_hassaniya', 'transliteration', 'definition']   
+        
+        
+        
+class ReplyForm(forms.ModelForm):
+    class Meta:
+        model = Commentaire
+        fields = ['commentaire']
+        widgets = {
+            'commentaire': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
+        }                  

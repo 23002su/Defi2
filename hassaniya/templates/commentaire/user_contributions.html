@@ -1,0 +1,71 @@
+{% extends '../base.html' %}
+{% block css %}
+<style>
+    .list-group-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .add {
+        background-color: #3498db;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<div class="container">
+    <h1 class="my-4">Mes contributions</h1>
+
+    {% if contributions %}
+    <div class="list-group">
+        {% for contribution in contributions %}
+        <div class="list-group-item">
+            <div>
+                <h5 class="mb-1">{{ contribution.mot }}</h5>
+                <small class="text-muted">Statut: {{ contribution.statut }}</small>
+            </div>
+            <!-- Button to view commenters -->
+            <button type="button" class="add btn btn-sm mt-2" data-bs-toggle="modal" data-bs-target="#commentersModal{{ contribution.id }}">
+                Voir les commentaires
+            </button>
+        </div>
+
+        <!-- Commenters Modal -->
+        <div class="modal fade" id="commentersModal{{ contribution.id }}" tabindex="-1" aria-labelledby="commentersModalLabel{{ contribution.id }}" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="commentersModalLabel{{ contribution.id }}">Commentaires pour "{{ contribution.mot }}"</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <ul class="list-group">
+                            {% for commenter in contribution.commenters %}
+                            <li class="list-group-item">
+                                <a href="{% url 'view_comments' contribution.id commenter.id %}" class="btn btn-link">
+                                    {{ commenter.email }}
+                                </a>
+                            </li>
+                            {% empty %}
+                            <li class="list-group-item">Aucun commentaire trouvé.</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info">Aucune contribution trouvée.</div>
+    {% endif %}
+</div>
+{% endblock %}

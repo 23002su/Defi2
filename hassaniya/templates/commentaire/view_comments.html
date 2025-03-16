@@ -1,0 +1,34 @@
+{% extends '../base.html' %}  <!-- Assuming you have a base template -->
+
+{% block content %}
+<div class="container">
+    <h1 class="my-4">Commentaires pour "{{ contribution.mot }}"</h1>
+
+    <h5>Commentaires de {{ selected_commenter.email }}</h5>
+
+    {% if comments %}
+    <div class="list-group">
+        {% for comment in comments %}
+        <div class="list-group-item">
+            <p class="mb-1">{{ comment.commentaire }}</p>
+            <small class="text-muted">Le {{ comment.date }}</small>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info">Aucun commentaire trouvé.</div>
+    {% endif %}
+
+    <!-- Reply Form -->
+    <div class="mt-4">
+        <h5>Répondre</h5>
+        <form method="POST" action="{% url 'reply_to_comment' contribution.id selected_commenter.id %}">
+            {% csrf_token %}
+            <div class="mb-3">
+                <textarea class="form-control" name="commentaire" rows="3" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Envoyer</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

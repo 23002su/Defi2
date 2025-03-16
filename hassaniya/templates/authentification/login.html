@@ -1,7 +1,70 @@
-<h2>Login</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Login</button>
-</form>
-<p>Don't have an account? <a href="{% url 'register' %}">Register here</a>.</p>
+<style>
+    .mainContainer {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 50px;
+    }
+    .Con{
+        border: 1.5px solid #69d3e8;
+        width: 360px;
+        padding: 20px 30px;
+    }
+    .formTitle h2 {
+        text-align: center;
+    }
+
+    .formBody form {
+        display: flex;
+        flex-direction: column;
+        align-items: left;
+        margin-top: 20px;
+    }
+    .formBody form input{
+        padding: 8px;
+        border-radius: 15px;
+        border: 1px solid #69d3e8;
+    }
+
+    .formBody form button {
+        padding: 8px;
+        width: 100%;
+        background-color: #69d3e8;
+        text-decoration: none;
+        border-radius: 15px;
+        color: #000;
+        margin-top: 10px;
+    }
+
+    .formFooter p {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .formFooter a {
+        text-decoration: none;
+        color: #69d3e8;
+    }
+
+    .formFooter a:hover {
+        text-decoration: underline;
+    }
+</style>
+
+<div class="mainContainer">
+    <div class="Con">
+        <div class="formTitle">
+            <h2>Login</h2>
+        </div>
+        <div class="formBody">
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit">Login</button>
+            </form>
+        </div>
+        <div class="formFooter">
+            <p>Don't have an account? <a href="{% url 'register' %}">Register here</a>.</p>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,72 @@
+{% extends '../base.html' %}  <!-- Assuming you have a base template -->
+
+{% block content %}
+<div class="container">
+    <h1 class="my-4">Rechercher un mot</h1>
+    <form id="search-form" method="GET" action="{% url 'search_word' %}">
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" name="search_term" placeholder="Entrez un mot en Hassaniya" required>
+            <button type="submit" class="btn btn-primary">Rechercher</button>
+        </div>
+    </form>
+
+    {% if exists %}
+    <!-- Display word details -->
+    <div class="card my-4">
+        <div class="card-body">
+            <h5 class="card-title">{{ mot.mot_hassaniya }}</h5>
+            <h6 class="card-subtitle mb-2 text-muted">{{ mot.transliteration }}</h6>
+            <p class="card-text">{{ mot.definition }}</p>
+        </div>
+    </div>
+
+    <!-- Display variants -->
+    {% if variants %}
+    <h4>Variantes</h4>
+    <ul class="list-group">
+        {% for variant in variants %}
+        <li class="list-group-item">
+            <strong>{{ variant.forme }}</strong> ({{ variant.type }})
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    {% elif search_term %}
+    <!-- Word not found, show suggestion popup -->
+    <div id="suggestion-popup" class="modal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Mot non trouvé</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Le mot <strong>{{ search_term }}</strong> n'existe pas dans le dictionnaire. Souhaitez-vous le suggérer comme contribution ?</p>
+                    <form id="suggestion-form" method="POST" action="{% url 'suggest_word' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="mot" value="{{ search_term }}">
+                        <div class="mb-3">
+                            <label for="transliteration" class="form-label">Transcription</label>
+                            <input type="text" class="form-control" name="transliteration" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="definition" class="form-label">Définition</label>
+                            <textarea class="form-control" name="definition" rows="3" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Suggérer</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Show the popup automatically
+        document.addEventListener('DOMContentLoaded', function() {
+            var popup = new bootstrap.Modal(document.getElementById('suggestion-popup'));
+            popup.show();
+        });
+    </script>
+    {% endif %}
+</div>
+{% endblock %}
