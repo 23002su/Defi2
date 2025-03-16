@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import RegistrationForm, LoginForm, UtilisateurForm
+from .forms import RegistrationForm, LoginForm, UtilisateurForm, CommentaireForm, ContributionForm
 from .models import Utilisateur, Mot, Variante, Contribution, Commentaire
 
 
@@ -96,3 +96,72 @@ def delete_user(request, id):
             return redirect('profile')
     else:
         return redirect('login')
+    
+    
+    
+# List Contributions
+def contributions_list(request):
+    user = Utilisateur.objects.get(id=request.session['user_id'])
+    contributions = Contribution.objects.filter(statut='en attente')  # Only show pending contributions
+    return render(request, 'admin/contributions_list.html', {'contributions': contributions, 'user': user})
+
+# Validate or Reject Contribution
+def validate_contribution(request, id):
+    contribution = get_object_or_404(Contribution, id=id)
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        if action == 'validate':
+            # Update the contribution status
+            contribution.statut = 'valide'
+
+            # Add the word to the Mot model
+            Mot.objects.create(
+                mot_hassaniya=contribution.mot,
+                transliteration=contribution.transliteration,
+                definition=contribution.definition
+            )
+
+        elif action == 'reject':
+            contribution.statut = 'rejeté'  # Add 'rejeté' to STATUT_CHOICES if not already present
+
+        # Assign the moderator (current user)
+        user = Utilisateur.objects.get(id=request.session['user_id'])
+        contribution.id_moderateur = user
+
+        # Save the updated contribution
+        contribution.save()
+
+        return redirect('contributions_list')
+    return redirect('contributions_list')
+
+# Add Comment to Contribution
+def add_comment(request, id):
+    contribution = get_object_or_404(Contribution, id=id)
+    if request.method == 'POST':
+        form = CommentaireForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            user = Utilisateur.objects.get(id=request.session['user_id'])
+            comment.id_moderateur = user
+            comment.id_contributeur = contribution.id_contribiteur
+            comment.save()
+            return redirect('contributions_list')
+    else:
+        form = CommentaireForm()
+    return render(request, 'admin/contributions_list.html', {'form': form, 'contribution': contribution,'user': user}) 
+
+
+# Suggest a Word
+def suggest_word(request):
+    if request.method == 'POST':
+        form = ContributionForm(request.POST)
+        if form.is_valid():
+            contribution = form.save(commit=False)
+            user = Utilisateur.objects.get(id=request.session['user_id'])
+            contribution.id_contribiteur = user
+            contribution.statut = 'en attente'  # Set status to 'pending'
+            contribution.save()
+            return redirect('contributions_list')
+    else:
+        form = ContributionForm()
+    return render(request, 'contributions_list.html', {'form': form, 'user':user})   

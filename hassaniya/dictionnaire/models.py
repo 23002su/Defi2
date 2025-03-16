@@ -34,6 +34,8 @@ class Contribution(models.Model):
     id_contribiteur = models.ForeignKey(Utilisateur, on_delete=models.CASCADE, related_name='contributions_contributor')
     id_moderateur = models.ForeignKey(Utilisateur, on_delete=models.SET_NULL, null=True, blank=True, related_name='contributions_moderator')
     mot = models.CharField(max_length=255)
+    transliteration = models.CharField(max_length=255, blank=True, null=True)
+    definition = models.TextField()
     statut = models.CharField(max_length=20, choices=STATUT_CHOICES, default='en attente')
 
     def __str__(self):

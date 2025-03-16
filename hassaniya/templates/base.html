@@ -42,6 +42,11 @@
                                 <a class="nav-link" href="{% url 'users_list' %}">Utilisateurs</a>
                             </li>
                             {% endif %}
+                            {% if user.role == 'Modérateur' or user.role == 'Admin' %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'contributions_list' %}">Contributions</a>
+                            </li>
+                            {% endif %}
                             <li class="nav-item">
                                 <a class="nav-link" href="{% url 'profile' %}">Profile</a>
                             </li>

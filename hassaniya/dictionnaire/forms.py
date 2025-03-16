@@ -1,5 +1,5 @@
 from django import forms
-from .models import Utilisateur
+from .models import Utilisateur, Commentaire, Contribution
 
 
 class UtilisateurForm(forms.ModelForm):
@@ -33,3 +33,19 @@ class RegistrationForm(forms.ModelForm):
 class LoginForm(forms.Form):
     email = forms.EmailField()
     mot_de_passe = forms.CharField(widget=forms.PasswordInput)
+    
+    
+class CommentaireForm(forms.ModelForm):
+    class Meta:
+        model = Commentaire
+        fields = ['commentaire']    
+
+class ContributionForm(forms.ModelForm):
+    class Meta:
+        model = Contribution
+        fields = ['mot', 'transliteration', 'definition']  # Include all necessary fields
+        widgets = {
+            'mot': forms.TextInput(attrs={'class': 'form-control'}),
+            'transliteration': forms.TextInput(attrs={'class': 'form-control'}),
+            'definition': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+        }       
