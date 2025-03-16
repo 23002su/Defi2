@@ -86,6 +86,7 @@ DATABASES = {
         'PORT': '3306',                       # Port MySQL (3306 par défaut)
         'OPTIONS': {
             'charset': 'utf8mb4',             # Encodage des caractères
+            'DISABLE_SERVER_SIDE_CURSORS': True,  # Ajout de cette ligne
         },
     }
 }
