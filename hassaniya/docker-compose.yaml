@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: mysql_container
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: hassaniya
+      MYSQL_USER: django_user
+      MYSQL_PASSWORD: django_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  web:
+    build: .
+    container_name: django_container
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_NAME=hassaniya
+      - DATABASE_USER=django_user
+      - DATABASE_PASSWORD=django_pass
+      - DATABASE_HOST=db
+      - DATABASE_PORT=3306
+    volumes:
+      - .:/app
+    command: ["gunicorn", "--bind", "0.0.0.0:8000", "hassaniya.wsgi:application"]
+
+volumes:
+  mysql_data:

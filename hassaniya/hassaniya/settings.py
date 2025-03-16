@@ -78,14 +78,14 @@ WSGI_APPLICATION = 'hassaniya.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',  # Utilisation du moteur MySQL
-        'NAME': 'hassaniya',                  # Nom de la base de données
-        'USER': 'root',                       # Nom d'utilisateur MySQL
-        'PASSWORD': '',                       # Pas de mot de passe
-        'HOST': 'localhost',                  # Hôte de la base de données (localhost par défaut)
-        'PORT': '3306',                       # Port MySQL (3306 par défaut)
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': os.getenv('DATABASE_NAME', 'hassaniya'),
+        'USER': os.getenv('DATABASE_USER', 'root'),
+        'PASSWORD': os.getenv('DATABASE_PASSWORD', ''),
+        'HOST': os.getenv('DATABASE_HOST', 'localhost'),
+        'PORT': os.getenv('DATABASE_PORT', '3306'),
         'OPTIONS': {
-            'charset': 'utf8mb4',             # Encodage des caractères
+            'charset': 'utf8mb4',
         },
     }
 }
