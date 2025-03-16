@@ -1,6 +1,17 @@
 from django import forms
 from .models import Utilisateur
 
+
+class UtilisateurForm(forms.ModelForm):
+    class Meta:
+        model = Utilisateur
+        fields = ['email', 'role', 'score', 'mot_de_passe']
+        widgets = {
+            'mot_de_passe': forms.PasswordInput(),
+        }
+
+
+
 class RegistrationForm(forms.ModelForm):
     confirm_password = forms.CharField(widget=forms.PasswordInput)
 
