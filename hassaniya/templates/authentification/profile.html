@@ -1,8 +1,24 @@
 {% extends '../base.html' %}
+{% block css %}
+<style>
+
+    .logout {
+        padding: 8px;
+        width:auto;
+        background-color: #69d3e8;
+        text-decoration: none;
+        border-radius: 25px;
+        color:#000;
+    }
+
+</style>
+{% endblock %}
+{% block title %}Profile
+{% endblock %}
 
 {% block content %}
     <h2>Welcome, {{ user.email }}!</h2>
     <p>Your role: {{ user.role }}</p>
     <p>Your score: {{ user.score }}</p>
-    <a href="{% url 'logout' %}">Logout</a>
+    <a class="logout" href="{% url 'logout' %}">Logout</a>
 {% endblock %}
