@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,56 +7,77 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            background-color: #f8f9fa;
+            background-color: #eef5f9;
+            font-family: Arial, sans-serif;
         }
-
+        .header-banner {
+            background: linear-gradient(45deg, #007bff, #6610f2);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            font-weight: bold;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .card {
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
         .card-header {
-            background-color: #007bff;
+            background: #007bff;
+            color: white;
+            font-weight: bold;
+        }
+        .table th {
+            background-color: #6610f2;
             color: white;
         }
-
-        .card-body {
-            background-color: #ffffff;
+        .btn-primary {
+            background: linear-gradient(45deg, #007bff, #6610f2);
+            border: none;
         }
-
-        .table th,
-        .table td {
-            text-align: center;
-            vertical-align: middle;
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #0056b3, #520dc2);
         }
-
-        .table td {
-            word-wrap: break-word;
-        }
-
-        .mt-5 {
-            margin-top: 3rem;
-        }
-
-        .alert-custom {
-            margin-top: 20px;
-            font-weight: bold;
+        .info-banner {
+            background-color: rgba(0, 123, 255, 0.1);
+            border-left: 5px solid #007bff;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            display: none;
         }
     </style>
 </head>
-
 <body>
-
     <div class="container mt-5">
-        <h2 class="text-center mb-4">Traduction de mots en Hassaniya</h2>
+        <div class="header-banner">Traduction de mots en Hassaniya</div>
+        
         <form method="GET" class="d-flex justify-content-center mb-4">
-            <input type="text" name="mot" class="form-control w-50" placeholder="Entrez un mot en Hassaniya" required value="{{ query }}">
-            <button type="submit" class="btn btn-primary ms-2">Rechercher</button>
+            <div class="w-50">
+                <div id="info-banner" class="info-banner">
+                    <strong>Mot saisi :</strong> <span id="entered-word"></span><br>
+                    <strong>Traduction Arabe :</strong> <span id="translation-arabe"></span><br>
+                    <strong>Traduction Français :</strong> <span id="translation-fr"></span><br>
+                    <strong>Dérivations :</strong> <span id="derivations"></span><br>
+                    <strong>Grammaire :</strong> <span id="grammar"></span>
+                </div>
+                <div class="input-group">
+                    <input type="text" name="mot" id="mot" class="form-control" placeholder="Entrez un mot en Hassaniya" required value="{{ query }}">
+                    <button type="submit" class="btn btn-primary">Rechercher</button>
+                </div>
+            </div>
         </form>
 
         {% if result %}
             <div class="card">
-                <div class="card-header">
-                    <h4>Résultats pour : "{{ query }}"</h4>
+                <div class="card-header text-center">
+                    Résultats pour : "{{ query }}"
                 </div>
                 <div class="card-body">
                     <table class="table table-bordered mt-3">
-                        <thead class="table-dark">
+                        <thead>
                             <tr>
                                 <th>Mot Hassaniya</th>
                                 <th>Traduction Arabe</th>
@@ -76,25 +96,27 @@
                             </tr>
                         </tbody>
                     </table>
-
-                    {% if result.suggestions %}
-                        <div class="alert alert-warning alert-custom">
-                            Aucun résultat exact trouvé pour le mot "{{ query }}". Voici des mots similaires :
-                        </div>
-                        <ul class="list-group mt-3">
-                            {% for suggestion in result.suggestions %}
-                                <li class="list-group-item">{{ suggestion }}</li>
-                            {% endfor %}
-                        </ul>
-                    {% endif %}
                 </div>
             </div>
-        {% else %}
-            <div class="alert alert-danger mt-4">Aucun résultat trouvé pour "{{ query }}". Essayez avec un autre mot.</div>
+        {% elif query %}
+            <div class="alert alert-danger text-center mt-4">Aucun résultat trouvé pour "{{ query }}". Essayez un autre mot.</div>
         {% endif %}
     </div>
 
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            let query = "{{ query }}";
+            if (query.trim() !== "") {
+                document.getElementById("info-banner").style.display = "block";
+                document.getElementById("entered-word").innerText = query;
+                document.getElementById("translation-arabe").innerText = "{{ result.traduction_arabe|default:'' }}";
+                document.getElementById("translation-fr").innerText = "{{ result.traduction_francais|default:'' }}";
+                document.getElementById("derivations").innerText = "{{ result.derivations|join:', '|default:'' }}";
+                document.getElementById("grammar").innerText = "{{ result.grammar|default:'' }}";
+            }
+        });
+    </script>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>
